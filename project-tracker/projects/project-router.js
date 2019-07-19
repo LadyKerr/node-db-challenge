@@ -79,4 +79,49 @@ router.post("/:id/actions", (req, res) => {
   }
 });
 
+//update project
+router.put("/:id", (req, res) => {
+  const { id } = req.params;
+  const changes = req.body;
+  const { description, name } = req.body;
+
+  Projects.update(id, changes)
+    .then(updated => {
+      if (!updated) {
+        res
+          .status(404)
+          .json({ message: "The project with that ID does not exist." });
+      } else if (!description || !name) {
+        res.status(400).json({
+          errorMessage: "Please provide description and name for the project."
+        });
+      } else {
+        res.status(200).json(updated);
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ error: "The project could not be modified." });
+    });
+});
+
+//delete projects
+router.delete("/:id", (req, res) => {
+  const { id } = req.params;
+
+  Projects.remove(id)
+    .then(deleted => {
+      if (deleted) {
+        res.status(200).json(deleted);
+      } else {
+        res.status(404).json({
+          message: "The project with that ID is not in the database."
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).json({ error: "The project could not be deleted." });
+    });
+});
+
 module.exports = router;
