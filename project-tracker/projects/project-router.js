@@ -39,6 +39,27 @@ router.get("/:id", (req, res) => {
     });
 });
 
+//get project Actions
+router.get("/:id/actions", (req, res) => {
+  const { id } = req.params;
+
+  Projects.getProjectActions(id)
+    .then(projectAction => {
+      if (projectAction && projectAction.length) {
+        res.status(200).json(projectAction);
+      } else {
+        res
+          .status(404)
+          .json({ message: "The project with that ID does not exist." });
+      }
+    })
+    .catch(err => {
+      res.status(500).json({
+        error: "There was an error getting the requested project actions."
+      });
+    });
+});
+
 //add new project
 router.post("/", (req, res) => {
   const { name, description } = req.body;

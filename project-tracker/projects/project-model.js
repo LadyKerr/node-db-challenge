@@ -5,7 +5,8 @@ module.exports = {
   getById,
   add,
   update,
-  remove
+  remove,
+  getProjectActions
 };
 
 //GET all projects
@@ -13,17 +14,28 @@ function get() {
   return db("projects");
 }
 
-//GET project by ID return null if id is invalid
+//GET project by ID return null if id is invalid; also return array with actions
 function getById(id) {
   return db("projects")
     .where({ id })
     .first()
     .then(project => {
       if (project) {
-        return project;
+        return getProjectActions(id).then(actions => {
+          project.action = actions;
+          return project;
+        });
       } else {
         return null;
       }
+    });
+}
+
+function getProjectActions(projectId) {
+  return db("actions")
+    .where("project_id", projectId)
+    .then(action => {
+      return action;
     });
 }
 
